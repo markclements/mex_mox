@@ -1,0 +1,4 @@
+body_ant	snout_tip	dorsal_ant
+body_post	dorsal_post	caud_upper
+opercle	lower_operc	upper_operc
+

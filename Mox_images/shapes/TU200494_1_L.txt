@@ -3,7 +3,7 @@
 	<ruler.interval type=vector names=FALSE length=1 as.numeric=TRUE >1</ruler.interval>
 	<scaling.units type=vector names=FALSE length=1 as.numeric=FALSE >cm</scaling.units>
 	<scaling type=vector names=FALSE length=1 as.numeric=TRUE >0.00662120992478266</scaling>
-	<image.name type=vector names=FALSE length=1 as.numeric=FALSE >TU200494_2_L.JPG</image.name>
+	<image.name type=vector names=FALSE length=1 as.numeric=FALSE >TU202134_1_L.JPG</image.name>
 	<landmarks.pixel type=matrix rownames=TRUE colnames=FALSE nrow=20 ncol=2 as.numeric=TRUE >
 		snout_tip	533	1288
 		dorsal_ant	2147	631

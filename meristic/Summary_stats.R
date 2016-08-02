@@ -1,12 +1,13 @@
 library(ggplot2)
-library(googlesheets)
+#library(googlesheets)
 library(tidyr)
 library(dplyr)
-meristics<-gs_key("1S5lCWzybtsKjC7Z6QXfX_hAhjlp6oYYQhqs2L9bwLSk")#BIO111TTH
-mer_table<-gs_read(ss=meristics)
-mer_table
-table(mer_table$DRAINAGE,mer_table$LL_SC)
-table(mer_table$DRAINAGE,mer_table$D)
+#meristics<-gs_key("1S5lCWzybtsKjC7Z6QXfX_hAhjlp6oYYQhqs2L9bwLSk")#BIO111TTH
+#mer_table<-gs_read(ss=meristics)
+mer_table<-read.csv(file = "meristic/AUSCON.csv")
+
+table(mer_table$DRAINAGE,mer_table$LL_SC) #lat line scale counts
+table(mer_table$DRAINAGE,mer_table$D) #d-fin counts
 
 
 ggplot(data = mer_table) + 

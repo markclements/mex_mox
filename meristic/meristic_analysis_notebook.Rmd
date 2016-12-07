@@ -19,10 +19,12 @@ mer_table
 ```
 **Lateral Line Scales**
 
-Summraise lateral line scales by river system (DRAINAGE) using a figure. Size of points is the number of individuals (n). The light grey point represents the mean value.  
+Summraise lateral line scales by river system (DRAINAGE) using a figure.   
   
-Bob Jenkins thought, and my own analysis confirms (Clements et al., 2014), that it is important to consider variation within major drainages. Add some of that complexity to the plots and visualize. Size of points is the number of individuals (n). The light grey point represents the mean value.
-
+Bob Jenkins thought, and my own analysis confirms (Clements et al., 2014), that it is important to consider variation within major river systems. 
+  
+Add some of that complexity to the plots and visualize. Size of points is the number of individuals (n). The light grey point represents the mean value.  
+  
 ```{r,fig.height=5}
 mer_table %>%
   filter(LL_SC>0) %>%
@@ -30,29 +32,29 @@ mer_table %>%
   ggplot(aes(x=drain_sys,y=LL_SC))+
   geom_count() +
   theme(axis.text.x=element_text(angle=0,hjust=1,vjust = 1))+
-  stat_summary(fun.y="mean",geom="point",colour = "grey", size = 2,alpha=.7)+
+  stat_summary(fun.y="mean",geom="point",colour = "grey", size = 2,alpha=.9)+
   scale_y_continuous(breaks=seq(41,50,1))+
   coord_flip()+
   ggtitle("Lateral Line Scales")
 ```
-Fish from the Middle Rio Bravo (Alimito Creek, Rio Bravo Mainstem near the Conchos and Conchos proper) have higher lateral line scale counts (>45). Not too suprising given the genetic divergence (Clements et al. 2014) of this population  
+Fish from the Middle Rio Bravo (Alimito Creek, Rio Bravo near the Conchos and Conchos River) have higher lateral line scale counts (>45). This population  is genetically  divergent (Clements et al. 2014) from other described species in Mexico.  
   
-The Rio Mezquital and San Pedro?_Lerma? (i.e.,*Scartomyzon milleri*) inhabit a separate, Pacific slope drainage and have similar counts as the Rio Conchos populations. 
+The Rio Mezquital and San Pedro?_Lerma? (i.e.,*Scartomyzon milleri*) inhabit a separate, Pacific slope drainage and have similar counts as fish of the Rio Conchos. 
   
-ower Rio Grande de Santiago (Balanos, Juchipila, San Nichols, Huyamamato, Verde) Pacific slope drainages have a high lateral line counts, but lower mean counts compared to the Conchos and Rio Mezquital populations.  
+The fish found in the Lower Rio Grande de Santiago (a separate pacific slope drainage that includes several several sub-systems -- Balanos, Juchipila, San Nichols, Huyamamato, Verde) have a high lateral line counts, but lower mean counts than the Conchos and Rio Mezquital.
   
-Fish from above Lake Chapala (Lerma = type Locality for *S. austrinus*) have fewer lateral line scales (42-45) similar to populations in the Pacific slope Ameca and Armeria drainges. The latter fish represent the nominal *S. mascotae*.  
+Fish from above Lake Chapala (Rio Lerma = type Locality for *S. austrinus*) have fewer lateral line scales (42-45) and similar to populations found in the Pacific slope flowing Ameca and Armeria drainges. The Armeria and Ameca fish represent the described *S. mascotae*.  
   
-*S. albidus* are known from the tribs of Lower Rio Bravo (Rio San Juan, Rio Salado) and 1 Atlantic slope (Rio San Fernando) drainage of Mexico. All of these populations have counts (42-47) similar to *S. austrinus* and *S. mascotae* of the Pacific Slope.  
+*S. albidus* are known from the tributaries of the Lower Rio Bravo (Rio San Juan, Rio Salado) and 1 Gulf slope (Rio San Fernando) drainage of Mexico. All of these populations have counts (42-47) similar to *S. austrinus* and *S. mascotae* of the Pacific Slope.  
   
-The undescribed Rio Soto la Marina populatio, formerly recognized as *S. albidus*, is genetically distinct from all other *Scartomyzon* in Mexico and Texas (Clements et al. 2014). This populations has fewer average lateral line scales (42-46) than *S. albiudus*. The counts of this population tend are simialar *S. congestus* (41-47) from the Atalantic drainges (Brazos, Colorado, Guadelupe, San Antonio, Nueces). The Pecos R., recognized as *S. congestus* (Clements et al., 2014), have similar counts (44-45).
+The undescribed Rio Soto la Marina population, formerly recognized as *S. albidus*, is genetically distinct from all other *Scartomyzon* in Mexico and Texas (Clements et al. 2014). This populations has fewer average lateral line scales (42-46) than *S. albiudus*. The counts for this population are simialar to *S. congestus* (41-47) from the Gulf slope drainges (Brazos, Colorado, Guadelupe, San Antonio, Nueces). The Pecos R., recognized as *S. congestus* (Clements et al., 2014), have similar counts (44-45).
   
 The fish from Devils R and vicinity were genetically similar to *S. congestus* (Clements et al.  2014).These fish tend to have higher counts (44-47) than other Atlantic slope and Pecos R *S. congestus* populations.They are more similar to fish from the lower Rio Bravo (Rio San Juan and Rio Salado).  
   
   
   
 **Circumbody Scales**  
-Summraise circumbody scales by river system (DRAINAGE and system) with a figure. Size of points is the number of individuals (n). The light grey point represents the mean value. Include system level information for certain drainages. 
+Summarise circumbody scales by river system (DRAINAGE and system) with a figure. Size of points is the number of individuals (n). The light grey point represents the mean value. Include system level information for certain populations.  
 
 ```{r,fig.width=8}
 mer_table %>%
@@ -62,18 +64,18 @@ mer_table %>%
   ggplot(aes(x=drain_sys,y=CB_SC))+
   geom_count() +
   theme(axis.text.x=element_text(angle=0,hjust=1,vjust = 1))+
-  stat_summary(fun.y="mean",geom="point",colour = "grey", size = 2,alpha=.7)+
+  stat_summary(fun.y="mean",geom="point",colour = "grey", size = 2,alpha=.9)+
   scale_y_continuous(breaks=seq(30,44,1))+
   coord_flip()+
   ggtitle("Total Circumbody Scales")
 ```
-Similar to the patterns seen in lateral line scale counts. Conchos River (38-43) and Lower Rio Gande de Santiago (36-43) have high sclae counts.  
+Similar to patterns observed for lateral line scale variation, Conchos River (38-43) and Lower Rio Gande de Santiago (36-43) have high scale counts.  
   
-Unlike the pattern in lateral line scales, the Rio Mezquital (*S. milleri*) have fewer circumbody scales (35-38) relative to Conchos and lower Rio Grande de Santiago.  
+Unlike patterns in lateral line scales, the Rio Mezquital (*S. milleri*) have fewer circumbody scales (35-38) than Conchos and lower Rio Grande de Santiago.  
   
 The Lerma (*S. austrinus, type locality) have the lowest counts (30-34).   
   
-*S. moscotae* (Aremeria and Ameca) have more circumbody scales (32-39) than the nearby Rio Lerma. 
+*S. moscotae* (Aremeria and Ameca) have more circumbody scales (32-39) than nearby Rio Lerma. 
   
 *S.albiuds* (Lower Rio Bravo tribs and Atlantic slope draingages of Mexico) have 31-37 scales. The Rio Salado tends to have lower counts (31-33). The undescribe Rio Soto la Marina have simialr counts. Circumbody scales are similar for *S. congestus* (31-37) (Pecos R, Devils R, and Atlantic Slope Drainages of Texas).   
   
@@ -87,10 +89,104 @@ mer_table %>%
   ggplot(aes(x=drain_sys,y=CB_U))+
   geom_count() +
   theme(axis.text.x=element_text(angle=0,hjust=1,vjust = 1))+
-  stat_summary(fun.y="mean",geom="point",colour = "grey", size = 3,alpha=.7)+
+  stat_summary(fun.y="mean",geom="point",colour = "grey", size = 3,alpha=.9)+
   scale_y_continuous(breaks=seq(10,50,1))+
   coord_flip()+
   ggtitle("Upper Circumbody Scales")
-
-
 ```
+*S.mascotae* (Armeria and Ameca) have on average more scales (13-15) than *S.austrinus* from the Lerma (type locality) (13).  
+  
+The undescribed Rio Soto la Marina and *S.albidus* have similar counts (13-15). 
+  
+*S. congestus* have slightly higher average counts than *S.albidus*.  
+  
+The undescribed Rio Conchos have much higher counts (15-17). The undescribed Rio Grande de Santiao have similat counts but are on average higher than Rio Conchos. 
+
+```{r,fig.width=7}
+mer_table %>%
+  filter(CB_L>0)%>%
+  unite(drain_sys,DRAINAGE,SYSTEM,sep="_")%>%
+  ggplot(aes(x=drain_sys,y=CB_L))+
+  geom_count() +
+  theme(axis.text.x=element_text(angle=0,hjust=1,vjust = 1))+
+  stat_summary(fun.y="mean",geom="point",colour = "grey", size = 3,alpha=.9)+
+  scale_y_continuous(breaks=seq(10,50,1))+
+  coord_flip()+
+  ggtitle("Lower Circumbody Scales")
+```
+*S. mascotae* has 17-22 scales similar to fish from the Gulf slope (Rio Soto la Marina, *S. albidus*) although two populations of *S. albidus* (Rio San Juan and Rio Salado) have on average fewer scales.  
+
+*S. austrinus* from the Rio Lerma (type locality) have fewest scales (15-19).
+    
+*S.congestus* from Texas have fewer scales on average than those in the Pecos R. and Rio Bravo (including Devils R.).  
+  
+The highest scale counts are found in the Conchos R (20-24) and the Rio Grande de Santiago.
+  
+**Circum-peduncle scales**
+  
+```{r,fig.width=7}
+mer_table %>%
+  filter(CP_SC>0)%>%
+  unite(drain_sys,DRAINAGE,SYSTEM,sep="_")%>%
+  ggplot(aes(x=drain_sys,y=CP_SC))+
+  geom_count() +
+  theme(axis.text.x=element_text(angle=0,hjust=1,vjust = 1))+
+  stat_summary(fun.y="mean",geom="point",colour = "grey", size = 3,alpha=.9)+
+  scale_y_continuous(breaks=seq(10,50,1))+
+  coord_flip()+
+  ggtitle("Circum-peduncle Scales")
+```
+Most fish in this group have 16 caudal peduncle scales. The fish found in the Rio Grande de Santiago have higher average counts (16-20). 
+
+
+
+```{r,fig.width=7}
+mer_table %>%
+  filter(P1>0)%>%
+  unite(drain_sys,DRAINAGE,SYSTEM,sep="_")%>%
+  ggplot(aes(x=drain_sys,y=P1))+
+  geom_count() +
+  theme(axis.text.x=element_text(angle=0,hjust=1,vjust = 1))+
+  stat_summary(fun.y="mean",geom="point",colour = "grey", size = 3,alpha=.9)+
+  scale_y_continuous(breaks=seq(10,50,1))+
+  coord_flip()+
+  ggtitle("Pectoral Fin Rays")
+```  
+
+```{r,fig.width=7}
+mer_table %>%
+  filter(P2_L>0)%>%
+  unite(drain_sys,DRAINAGE,SYSTEM,sep="_")%>%
+  ggplot(aes(x=drain_sys,y=P2_L))+
+  geom_count() +
+  theme(axis.text.x=element_text(angle=0,hjust=1,vjust = 1))+
+  stat_summary(fun.y="mean",geom="point",colour = "grey", size = 3,alpha=.9)+
+  scale_y_continuous(breaks=seq(7,50,1))+
+  coord_flip()+
+  ggtitle("Pelvic Fin Rays (Left)")
+```  
+
+```{r,fig.width=7}
+mer_table %>%
+  filter(P2_R>0)%>%
+  unite(drain_sys,DRAINAGE,SYSTEM,sep="_")%>%
+  ggplot(aes(x=drain_sys,y=P2_R))+
+  geom_count() +
+  theme(axis.text.x=element_text(angle=0,hjust=1,vjust = 1))+
+  stat_summary(fun.y="mean",geom="point",colour = "grey", size = 3,alpha=.9)+
+  scale_y_continuous(breaks=seq(7,50,1))+
+  coord_flip()+
+  ggtitle("Pelvic Fin Rays (Right)")
+``` 
+```{r,fig.width=7}
+mer_table %>%
+  filter(D>0)%>%
+  unite(drain_sys,DRAINAGE,SYSTEM,sep="_")%>%
+  ggplot(aes(x=drain_sys,y=D))+
+  geom_count() +
+  theme(axis.text.x=element_text(angle=0,hjust=1,vjust = 1))+
+  stat_summary(fun.y="mean",geom="point",colour = "grey", size = 3,alpha=.9)+
+  scale_y_continuous(breaks=seq(7,50,1))+
+  coord_flip()+
+  ggtitle("Dorsal Fin Rays (Right)")
+``` 

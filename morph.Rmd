@@ -1,0 +1,49 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+library(StereoMorph)
+library(Momocs)
+library(ggplot2)
+library(geomorph)
+library(readr)
+```
+
+```{r}
+
+```
+
+```{r}
+files<-paste0("Mox_images/shapes/TU198404_",1:6,"_L.txt")
+
+(a<-readShapes(files))
+```
+```{r}
+lm<-a$landmarks.scaled
+lm
+```
+
+```{r}
+curv<-a$curves.scaled
+```
+
+
+```{r}
+lm1<-lm[,,1]
+lm1<-rbind(lm1,pointsAtEvenSpacing(curv$TU198404_1_L$body_post,n=10),
+               pointsAtEvenSpacing(curv$TU198404_1_L$body_ant,n=20),
+               pointsAtEvenSpacing(curv$TU198404_1_L$opercle,n=10))
+```
+
+```{r}
+ggplot(as.data.frame(lm1),aes(V1,V2))+
+  geom_point()
+```
+```{r}
+gpa<-gpagen(a$landmarks.scaled)
+gpa
+```
+```{r}
+plotAllSpecimens(gpa$coords,mean=F)
+```

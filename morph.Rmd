@@ -8,20 +8,26 @@ library(Momocs)
 library(ggplot2)
 library(geomorph)
 library(readr)
+library(purrr)
+library(listviewer)
+library(tibble)
 ```
 
 ```{r}
-
+(localities<-read_csv("Marks_Mox - Sheet1.csv"))
 ```
 
 ```{r}
 files<-paste0("Mox_images/shapes/TU198404_",1:6,"_L.txt")
-
-(a<-readShapes(files))
+a<-readShapes(files,fields=c("landmarks.scaled","curves.scaled"))
 ```
+
+```{r}
+str(a,levels=1)
+```
+
 ```{r}
 lm<-a$landmarks.scaled
-lm
 ```
 
 ```{r}
@@ -29,12 +35,18 @@ curv<-a$curves.scaled
 ```
 
 
+
+
 ```{r}
-lm1<-lm[,,1]
-lm1<-rbind(lm1,pointsAtEvenSpacing(curv$TU198404_1_L$body_post,n=10),
-               pointsAtEvenSpacing(curv$TU198404_1_L$body_ant,n=20),
-               pointsAtEvenSpacing(curv$TU198404_1_L$opercle,n=10))
+
+for (i in 1:6) {
+
+  lm[,,i]<-rbind(lm[,,i],pointsAtEvenSpacing(curv[[i]]["body_post"],n=10), 
+                         pointsAtEvenSpacing(curv[[i]]["body_ant"],n=10),
+                         pointsAtEvenSpacing(curv[[i]]["opercle"],n=5))
+}
 ```
+
 
 ```{r}
 ggplot(as.data.frame(lm1),aes(V1,V2))+
@@ -47,3 +59,21 @@ gpa
 ```{r}
 plotAllSpecimens(gpa$coords,mean=F)
 ```
+```{r}
+jsonedit(a,mode="view")
+```
+
+
+
+```{r}
+map(flatten(a$curves.scaled),~pointsAtEvenSpacing(.x,n = 20),"body_ant")
+```
+```{r}
+dd<-array_tree(a$landmarks.scaled,margin = 3)
+landmarkListToMatrix(dd)
+```
+```{r}
+landmarkMatrixToList(a$landmarks.scaled,k=2)
+```
+
+

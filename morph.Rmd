@@ -5,16 +5,13 @@ output: html_notebook
 ```{r}
 library(StereoMorph)
 library(Momocs)
-library(ggplot2)
+library(tidyverse)
 library(geomorph)
-library(readr)
-library(purrr)
 library(listviewer)
-library(tibble)
 ```
 
 ```{r}
-(localities<-read_csv("Marks_Mox - Sheet1.csv"))
+localities<-read_csv("Marks_Mox - Sheet1.csv")
 ```
 
 ```{r}
@@ -23,7 +20,7 @@ a<-readShapes(files,fields=c("landmarks.scaled","curves.scaled"))
 ```
 
 ```{r}
-str(a,levels=1)
+str(a,levels=3)
 ```
 
 ```{r}
@@ -34,46 +31,72 @@ lm<-a$landmarks.scaled
 curv<-a$curves.scaled
 ```
 
-
-
-
+generate coordinate matrices, add curve landmarks/semi-landmarks to matrix. 
 ```{r}
+new<-list()
 
 for (i in 1:6) {
 
-  lm[,,i]<-rbind(lm[,,i],pointsAtEvenSpacing(curv[[i]]["body_post"],n=10), 
+  new[[i]]<-rbind(lm[,,i],pointsAtEvenSpacing(curv[[i]]["body_post"],n=10), 
                          pointsAtEvenSpacing(curv[[i]]["body_ant"],n=10),
                          pointsAtEvenSpacing(curv[[i]]["opercle"],n=5))
 }
+
+
 ```
 
 
+Remove all duplicate coordinates
+
 ```{r}
-ggplot(as.data.frame(lm1),aes(V1,V2))+
-  geom_point()
+new<-map(new,~unique(.x))
+
 ```
+
+convert to array, with appropriate dimensions
 ```{r}
-gpa<-gpagen(a$landmarks.scaled)
+
+new_a<-array(as.numeric(unlist(new)), c(dim=c(dim(new[[1]])[1]),dim(new[[1]])[2], length(new))) # number landmarks, x/y, number of spms
+```
+
+Generate plot to aid in defining sliding, semi-landmarks using AUTO mode of `define.sliders()`. There are 20 fixed landmarks, curves are found between landmarks 1 and 2 (anterior, dorsal body), 3 and 4 (posterior, dorsal body), and 10 and 11 (opercle) 
+
+```{r}
+dd<-as.data.frame(new_a[,,1])
+dd$label<-1:length(dd$V1)
+
+ggplot(dd,aes(V1,V2))+
+  geom_point(alpha=0.7)+
+  geom_text(label=dd$label,check_overlap = F,nudge_x = 1,size=3)
+```
+
+Generate semi-landmarks matrix for gpagen using `define.sliders()`. 
+```{r}
+curves<-rbind(define.sliders(c(1,29:36,2)),
+              define.sliders(c(3,21:28,4)),
+              define.sliders(c(10,37:39,11)))
+```
+
+```{r}
+gpa<-gpagen(new_a,curves = curves)
 gpa
 ```
 ```{r}
 plotAllSpecimens(gpa$coords,mean=F)
 ```
 ```{r}
+PCA <- plotTangentSpace(gpa$coords)
+
+```
+
+
+```{r}
 jsonedit(a,mode="view")
 ```
 
 
 
-```{r}
-map(flatten(a$curves.scaled),~pointsAtEvenSpacing(.x,n = 20),"body_ant")
-```
-```{r}
-dd<-array_tree(a$landmarks.scaled,margin = 3)
-landmarkListToMatrix(dd)
-```
-```{r}
-landmarkMatrixToList(a$landmarks.scaled,k=2)
-```
+
+
 
 

@@ -4,60 +4,63 @@ output: html_notebook
 ---
 ```{r}
 library(StereoMorph)
-library(Momocs)
 library(tidyverse)
 library(geomorph)
 library(listviewer)
+library(stringr)
 ```
 
 ```{r}
-localities<-read_csv("Marks_Mox - Sheet1.csv")
+(localities<-read_csv("Marks_Mox - Sheet1.csv"))
+```
+```{r}
+localities %>%
+  select(CatalogNumber,species,drainage,river)%>%
+  rename(cat_num=CatalogNumber)->loc
+
+```
+
+
+```{r}
+#files<-paste0("Mox_images/shapes/TU198404_",1:6,"_L.txt")
+a<-readShapes(file = "Mox_images/shapes/",fields=c("landmarks.scaled","curves.scaled"))
+```
+
+Put landmark data into a tibble. 
+```{r}
+data<-tibble(num=attr(a$landmarks.scaled,"dimnames")[[3]],
+       fixedlm=array_branch(a$landmarks.scaled,margin = 3),
+       c_body_ant=map(a$curves.scaled,"body_ant"),
+       c_body_post=map(a$curves.scaled,"body_post"),
+       c_opercle=map(a$curves.scaled,"opercle"))
+
 ```
 
 ```{r}
-files<-paste0("Mox_images/shapes/TU198404_",1:6,"_L.txt")
-a<-readShapes(files,fields=c("landmarks.scaled","curves.scaled"))
+data %>%
+  mutate(cat_num=str_extract(num,"[0-9]+"))->data
 ```
 
 ```{r}
-str(a,levels=3)
+data$cat_num<-as.integer(data$cat_num)
+(data<-left_join(data,loc))
 ```
 
+convert curves into landmarks, evenly spaced along curves. Bind fixed and semi-landmarks together and remove duplicates. 
 ```{r}
-lm<-a$landmarks.scaled
+data %>%
+  mutate(body_ant=map(c_body_ant,~pointsAtEvenSpacing(.x,n=10)))%>%
+  mutate(body_post=map(c_body_post,~pointsAtEvenSpacing(.x,n=10)))%>%
+  mutate(opercle=map(c_opercle,~pointsAtEvenSpacing(.x,n=5))) %>%
+  mutate(land_marks=pmap(list(fixedlm,body_ant,body_post,opercle),rbind))%>%
+  mutate(land_marks=map(land_marks,~unique(.x)))->data
 ```
 
+Convert list (and bind several arrays together) using `sapply()`
 ```{r}
-curv<-a$curves.scaled
+new_a<-sapply(data$land_marks, I, simplify="array")
 ```
 
-generate coordinate matrices, add curve landmarks/semi-landmarks to matrix. 
-```{r}
-new<-list()
-
-for (i in 1:6) {
-
-  new[[i]]<-rbind(lm[,,i],pointsAtEvenSpacing(curv[[i]]["body_post"],n=10), 
-                         pointsAtEvenSpacing(curv[[i]]["body_ant"],n=10),
-                         pointsAtEvenSpacing(curv[[i]]["opercle"],n=5))
-}
-
-
-```
-
-
-Remove all duplicate coordinates
-
-```{r}
-new<-map(new,~unique(.x))
-
-```
-
-convert to array, with appropriate dimensions
-```{r}
-
-new_a<-array(as.numeric(unlist(new)), c(dim=c(dim(new[[1]])[1]),dim(new[[1]])[2], length(new))) # number landmarks, x/y, number of spms
-```
 
 Generate plot to aid in defining sliding, semi-landmarks using AUTO mode of `define.sliders()`. There are 20 fixed landmarks, curves are found between landmarks 1 and 2 (anterior, dorsal body), 3 and 4 (posterior, dorsal body), and 10 and 11 (opercle) 
 
@@ -84,19 +87,40 @@ gpa
 ```{r}
 plotAllSpecimens(gpa$coords,mean=F)
 ```
+plot PCA
 ```{r}
-PCA <- plotTangentSpace(gpa$coords)
+PCA <- plotTangentSpace(gpa$coords,warpgrids = F)
+```
+```{r}
+pca<-as_tibble(PCA$pc.scores[,c(1,2)])
+pca$id<-data$drainage
+pca$id2<-data$species
 
+
+pca %>%
+  split(.$id)%>%
+  map(~.x[chull(x=.x$PC1,y=.x$PC2),]) %>%
+  bind_rows(.) -> hull
 ```
 
 
+
 ```{r}
-jsonedit(a,mode="view")
+ggplot(pca, aes(PC1, PC2, color = id2)) +
+  geom_polygon(data = hull,aes(PC1,PC2,group=id,fill=id),alpha=0.3) +
+  geom_point()+
+  facet_wrap(~id2)
 ```
 
-
-
-
+```{r}
+M<-mshape(gpa$coords)
+PC<-PCA$pc.scores[,1:2]
+preds<-shape.predictor(gpa$coords,x=PC,Intercept = FALSE,
+                       pred1=c(-0.05,0.04)) 
+                       
+GP<-gridPar(pt.size=0.5,tar.pt.size=0.5,n.col.cell = 50)      
+plotRefToTarget(M,preds$pred1,mag = 2,method = "vector",gridPars = GP)
+```
 
 
 

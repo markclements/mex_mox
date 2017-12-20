@@ -5,14 +5,12 @@ output: html_notebook
 
 Load packages needed for analysis
 ```{r}
-library(ggplot2)
-library(tidyr)
-library(dplyr)
-library(readr)
+library(tidyverse)
 library(stringr)
 ```
 
-load Bob Jenkins data. Includes counts and measurements that he collected between 1970-ish and 1990-ish. Included most, if not all, specimens in musuems at the time. 
+Load Bob Jenkins' data. Includes counts and measurements that he collected between 1970-ish and 1990-ish. Includes most, if not all, specimens in musuems at the time. 
+
 ```{r,cache=T}
 mer_table<-read_csv(file = "AUSCON.csv")
 mer_table
@@ -50,8 +48,7 @@ Fish from above Lake Chapala (Rio Lerma = type Locality for *S. austrinus*) have
 The undescribed Rio Soto la Marina population, formerly recognized as *S. albidus*, is genetically distinct from all other *Scartomyzon* in Mexico and Texas (Clements et al. 2014). This populations has fewer average lateral line scales (42-46) than *S. albiudus*. The counts for this population are simialar to *S. congestus* (41-47) from the Gulf slope drainges (Brazos, Colorado, Guadelupe, San Antonio, Nueces). The Pecos R., recognized as *S. congestus* (Clements et al., 2014), have similar counts (44-45).
   
 The fish from Devils R and vicinity were genetically similar to *S. congestus* (Clements et al.  2014).These fish tend to have higher counts (44-47) than other Atlantic slope and Pecos R *S. congestus* populations.They are more similar to fish from the lower Rio Bravo (Rio San Juan and Rio Salado).  
-  
-  
+
   
 **Circumbody Scales**  
 Summarise circumbody scales by river system (DRAINAGE and system) with a figure. Size of points is the number of individuals (n). The light grey point represents the mean value. Include system level information for certain populations.  
@@ -69,6 +66,10 @@ mer_table %>%
   coord_flip()+
   ggtitle("Total Circumbody Scales")
 ```
+
+
+
+
 Similar to patterns observed for lateral line scale variation, Conchos River (38-43) and Lower Rio Gande de Santiago (36-43) have high scale counts.  
   
 Unlike patterns in lateral line scales, the Rio Mezquital (*S. milleri*) have fewer circumbody scales (35-38) than Conchos and lower Rio Grande de Santiago.  
@@ -190,3 +191,179 @@ mer_table %>%
   coord_flip()+
   ggtitle("Dorsal Fin Rays (Right)")
 ``` 
+```{r,fig.width=7}
+mer_table %>%
+  filter(LIP_A>0)%>%
+  unite(drain_sys,DRAINAGE,SYSTEM,sep="_")%>%
+  ggplot(aes(x=drain_sys,y=LIP_A))+
+  geom_count() +
+  theme(axis.text.x=element_text(angle=0,hjust=1,vjust = 1))+
+  stat_summary(fun.y="mean",geom="point",colour = "grey", size = 3,alpha=.9)+
+  scale_y_continuous(breaks=seq(90,180,10))+
+  coord_flip()+
+  ggtitle("Lip Angle")
+``` 
+```{r,fig.width=7}
+mer_table %>%
+  filter(U_LIP_P>0)%>%
+  unite(drain_sys,DRAINAGE,SYSTEM,sep="_")%>%
+  ggplot(aes(x=drain_sys,y=U_LIP_P))+
+  geom_count() +
+  theme(axis.text.x=element_text(angle=0,hjust=1,vjust = 1))+
+  stat_summary(fun.y="mean",geom="point",colour = "grey", size = 3,alpha=.9)+
+  scale_y_continuous(breaks=seq(20,40,1))+
+  coord_flip()+
+  ggtitle("Upper Lip Plicae")
+``` 
+```{r,fig.width=7}
+mer_table %>%
+  filter(L_LIP_P>0)%>%
+  unite(drain_sys,DRAINAGE,SYSTEM,sep="_")%>%
+  ggplot(aes(x=drain_sys,y=L_LIP_P))+
+  geom_count() +
+  theme(axis.text.x=element_text(angle=0,hjust=1,vjust = 1))+
+  stat_summary(fun.y="mean",geom="point",colour = "grey", size = 3,alpha=.9)+
+  scale_y_continuous(breaks=seq(90,180,10))+
+  coord_flip()+
+  ggtitle("Lower Lip Plicae")
+``` 
+```{r}
+mer_table %>%
+  mutate(species=case_when(DRAINAGE=="01 Brazos"     ~ "congestum",
+                           DRAINAGE=="02 Colorado"   ~ "congestum",
+                           DRAINAGE=="03 Guadalupe"  ~ "congestum",
+                           DRAINAGE=="04 SanAntonio" ~ "congestum",
+                           DRAINAGE=="05 Nueces"     ~ "congestum",
+                           SYSTEM=="11-Pecos"        ~ "congestum",
+                           SYSTEM=="10-upper"        ~ "congestum",
+                           SYSTEM=="12-Devils"       ~ "albidus",
+                           SYSTEM=="18-SanJuan"      ~ "albidus",
+                           SYSTEM=="15-Salado"       ~ "albidus",
+                           DRAINAGE=="09 SanFernando"~ "albidus",
+                           DRAINAGE=="10 RioSotaLaMarina" ~ "alb_spp",
+                           SYSTEM=="13-below Devils" ~ "congestum")) %>%
+  filter(species=="congestum" | 
+         species=="albidus" | 
+         species=="alb_spp") %>%
+  filter(LL_SC > 0 & CB_U>0 & CB_L >0 & D>0 ) %>%
+  prcomp(~LL_SC+CB_U,+CB_L+D,data=.,scale = F,center=T)->pca
+```
+
+```{r}
+pca$x %>%
+  as_tibble(.)%>%
+ggplot() +
+  geom_point(aes(PC1,PC2))
+
+biplot(pca)
+```
+```{r}
+mer_table %>%
+  select(DRAINAGE,SYSTEM) %>%
+  unite(DR_SYS,DRAINAGE,SYSTEM,sep="--") %>%
+  unique()
+
+```
+
+
+```{r}
+mer_table %>%
+  mutate(species=case_when(DRAINAGE=="01 Brazos"     ~ "congestum",
+                           DRAINAGE=="02 Colorado"   ~ "congestum",
+                           DRAINAGE=="03 Guadalupe"  ~ "congestum",
+                           DRAINAGE=="04 SanAntonio" ~ "congestum",
+                           DRAINAGE=="05 Nueces"     ~ "congestum",
+                           SYSTEM=="11-Pecos"        ~ "congestum",
+                           SYSTEM=="10-upper"        ~ "congestum",
+                           SYSTEM=="12-Devils"       ~ "albidus",
+                           SYSTEM=="18-SanJuan"      ~ "albidus",
+                           SYSTEM=="15-Salado"       ~ "albidus",
+                           DRAINAGE=="09 SanFernando"~ "albidus",
+                           DRAINAGE=="10 RioSotaLaMarina" ~ "alb_spp",
+                           SYSTEM=="13-below Devils" ~ "congestum")) %>%
+  filter(species=="congestum" | 
+         species=="albidus" | 
+         species=="alb_spp") %>%
+  group_by(species) %>%
+  gather(morph,value,LL_SC,CB_SC,CB_U,CB_L,D)%>%
+  filter(value!=0)%>%
+  ggplot(aes(x=species,y=value))+
+  geom_violin((aes(fill=species)))+
+  facet_grid(.~morph,scales = "free",shrink = T)
+```
+```{r}
+mer_table %>%
+  mutate(species=case_when(DRAINAGE=="01 Brazos"     ~ "congestum",
+                           DRAINAGE=="02 Colorado"   ~ "congestum",
+                           DRAINAGE=="03 Guadalupe"  ~ "congestum",
+                           DRAINAGE=="04 SanAntonio" ~ "congestum",
+                           DRAINAGE=="05 Nueces"     ~ "congestum",
+                           SYSTEM=="11-Pecos"        ~ "congestum",
+                           SYSTEM=="10-upper"        ~ "congestum",
+                           SYSTEM=="12-Devils"       ~ "albidus",
+                           SYSTEM=="18-SanJuan"      ~ "albidus",
+                           SYSTEM=="15-Salado"       ~ "albidus",
+                           DRAINAGE=="09 SanFernando"~ "albidus",
+                           DRAINAGE=="10 RioSotaLaMarina" ~ "alb_spp",
+                           SYSTEM=="13-below Devils" ~ "congestum")) %>%
+  filter(species=="congestum" | 
+         species=="albidus" | 
+         species=="alb_spp") %>%
+  group_by(species) %>%
+  gather(morph,value,LL_SC,CB_SC,CB_U,CB_L,D)%>%
+  filter(value!=0)%>%
+  ggplot(aes(x=value,y=species))+
+  geom_jitter((aes(color=SYSTEM)))+
+  facet_grid(morph~.,scales = "free",shrink = T)
+```
+
+
+```{r}
+mer_table %>%
+  mutate(species=case_when(DRAINAGE=="01 Brazos"     ~ "congestum",
+                           DRAINAGE=="02 Colorado"   ~ "congestum",
+                           DRAINAGE=="03 Guadalupe"  ~ "congestum",
+                           DRAINAGE=="04 SanAntonio" ~ "congestum",
+                           DRAINAGE=="05 Nueces"     ~ "congestum",
+                           SYSTEM=="11-Pecos"        ~ "congestum",
+                           SYSTEM=="10-upper"        ~ "congestum",
+                           SYSTEM=="12-Devils"       ~ "albidus",
+                           SYSTEM=="18-SanJuan"      ~ "albidus",
+                           SYSTEM=="15-Salado"       ~ "albidus",
+                           DRAINAGE=="09 SanFernando"~ "albidus",
+                           DRAINAGE=="10 RioSotaLaMarina" ~ "alb_spp",
+                           SYSTEM=="13-below Devils" ~ "congestum")) %>%
+  filter(species=="congestum" | 
+         species=="albidus" | 
+         species=="alb_spp") %>%
+  group_by(species) %>%
+  gather(morph,value,U_LIP_P,L_LIP_P)%>%
+  filter(value!=0)%>%
+  ggplot(aes(x=species,y=value))+
+  geom_violin((aes(fill=species)))+
+  facet_grid(.~morph,scales = "free",shrink = T)
+```
+```{r}
+mer_table %>%
+  mutate(species=case_when(DRAINAGE=="01 Brazos"     ~ "congestum",
+                           DRAINAGE=="02 Colorado"   ~ "congestum",
+                           DRAINAGE=="03 Guadalupe"  ~ "congestum",
+                           DRAINAGE=="04 SanAntonio" ~ "congestum",
+                           DRAINAGE=="05 Nueces"     ~ "congestum",
+                           SYSTEM=="11-Pecos"        ~ "congestum",
+                           SYSTEM=="10-upper"        ~ "congestum",
+                           SYSTEM=="12-Devils"       ~ "albidus",
+                           SYSTEM=="18-SanJuan"      ~ "albidus",
+                           SYSTEM=="15-Salado"       ~ "albidus",
+                           DRAINAGE=="09 SanFernando"~ "albidus",
+                           DRAINAGE=="10 RioSotaLaMarina" ~ "alb_spp",
+                           SYSTEM=="13-below Devils" ~ "congestum")) %>%
+  filter(species=="congestum" | 
+         species=="albidus" | 
+         species=="alb_spp") %>%
+  group_by(species) %>%
+  select(D,LIP_A)%>%
+  filter(LIP_A!=0 & D!=0)%>%
+  ggplot(aes(x=LIP_A,y=D,color=species))+
+  geom_point(aes(color=species))
+```

@@ -8,6 +8,7 @@ library(tidyverse)
 library(geomorph)
 library(listviewer)
 library(stringr)
+library(ggConvexHull)
 ```
 
 ```{r}
@@ -95,21 +96,19 @@ PCA <- plotTangentSpace(gpa$coords,warpgrids = F)
 pca<-as_tibble(PCA$pc.scores[,c(1,2)])
 pca$id<-data$drainage
 pca$id2<-data$species
-
-
-pca %>%
-  split(.$id)%>%
-  map(~.x[chull(x=.x$PC1,y=.x$PC2),]) %>%
-  bind_rows(.) -> hull
 ```
 
 
 
-```{r}
-ggplot(pca, aes(PC1, PC2, color = id2)) +
-  geom_polygon(data = hull,aes(PC1,PC2,group=id,fill=id),alpha=0.3) +
+```{r,fig.height=6,fig.width=8}
+pca %>%
+#   filter(id2=="alb_sp"|
+#          id2=="albidus"|
+#          id2=="congestus")%>%
+ ggplot(aes(PC1, PC2, color = id2)) +
+  geom_convexhull(alpha = 0.3,aes(fill = id2))+
   geom_point()+
-  facet_wrap(~id2)
+  coord_equal()
 ```
 
 ```{r}

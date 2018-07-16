@@ -362,8 +362,32 @@ mer_table %>%
          species=="albidus" | 
          species=="alb_spp") %>%
   group_by(species) %>%
-  select(D,LIP_A)%>%
-  filter(LIP_A!=0 & D!=0)%>%
-  ggplot(aes(x=LIP_A,y=D,color=species))+
-  geom_point(aes(color=species))
+  select(SL,LIP_A)%>%
+  filter(LIP_A!=0 & SL!=0)%>%
+  ggplot(aes(y=LIP_A,x=SL,color=species))+
+  geom_point(aes(color=species))+
+  geom_smooth()
+```
+```{r}
+mer_table %>%
+  mutate(species=case_when(DRAINAGE=="01 Brazos"     ~ "congestum",
+                           DRAINAGE=="02 Colorado"   ~ "congestum",
+                           DRAINAGE=="03 Guadalupe"  ~ "congestum",
+                           DRAINAGE=="04 SanAntonio" ~ "congestum",
+                           DRAINAGE=="05 Nueces"     ~ "congestum",
+                           SYSTEM=="11-Pecos"        ~ "congestum",
+                           SYSTEM=="10-upper"        ~ "congestum",
+                           SYSTEM=="12-Devils"       ~ "albidus",
+                           SYSTEM=="18-SanJuan"      ~ "albidus",
+                           SYSTEM=="15-Salado"       ~ "albidus",
+                           DRAINAGE=="09 SanFernando"~ "albidus",
+                           DRAINAGE=="10 RioSotaLaMarina" ~ "alb_spp",
+                           SYSTEM=="13-below Devils" ~ "congestum")) %>%
+  filter(species=="congestum" |
+         species=="albidus" |
+         species=="alb_spp")%>%
+  filter(!=0)%>%
+  ggplot()+
+  geom_point(aes(SL,D_HT,color=species))
+  
 ```
